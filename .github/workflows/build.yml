@@ -74,11 +74,15 @@ jobs:
               printf '%s\n' 'public class KeyCheck { public static void main(String[] a) throws Exception {' \
                 '  java.security.KeyStore.getInstance(new java.io.File(a[0]), a[1].toCharArray())' \
                 '    .getKey(a[2], a[3].toCharArray()); } }' > "$RUNNER_TEMP/KeyCheck.java"
-              if ! java "$RUNNER_TEMP/KeyCheck.java" "$KS" "$STORE_PW" "$ALIAS" "$KEY_PW" >/dev/null 2>&1; then
+              if java "$RUNNER_TEMP/KeyCheck.java" "$KS" "$STORE_PW" "$ALIAS" "$KEY_PW" >/dev/null 2>&1; then
+                echo "::notice::STORE_KEY_PASSWORD is correct"
+              elif java "$RUNNER_TEMP/KeyCheck.java" "$KS" "$STORE_PW" "$ALIAS" "$STORE_PW" >/dev/null 2>&1; then
+                # This kind of key (PKCS12) uses one password for both, so STORE_KEY_PASSWORD is optional.
+                echo "::notice::Using STORE_KEYSTORE_PASSWORD for the key as well"
+                KEY_PW="$STORE_PW"
+              else
                 echo "::error::STORE_KEY_PASSWORD doesn't match the key."
                 ok=false
-              else
-                echo "::notice::STORE_KEY_PASSWORD is correct"
               fi
             fi
           fi
