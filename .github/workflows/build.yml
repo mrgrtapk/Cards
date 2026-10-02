@@ -28,7 +28,19 @@ jobs:
       - name: Signing key
         env:
           STORE_KEYSTORE_BASE64: ${{ secrets.STORE_KEYSTORE_BASE64 }}
+          STORE_KEYSTORE_PASSWORD: ${{ secrets.STORE_KEYSTORE_PASSWORD }}
+          STORE_KEY_ALIAS: ${{ secrets.STORE_KEY_ALIAS }}
+          STORE_KEY_PASSWORD: ${{ secrets.STORE_KEY_PASSWORD }}
         run: |
+          # Say which signing secrets this build can see (never their values).
+          for name in STORE_KEYSTORE_BASE64 STORE_KEYSTORE_PASSWORD STORE_KEY_ALIAS STORE_KEY_PASSWORD; do
+            if [ -n "${!name}" ]; then echo "::notice::$name is set"; else echo "::warning::$name is missing"; fi
+          done
+          # A version tag must produce a signed release, so stop if the key isn't there.
+          if [ -z "$STORE_KEYSTORE_BASE64" ] && [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "::error::The signing secrets aren't set, so the release can't be signed."
+            exit 1
+          fi
           if [ -n "$STORE_KEYSTORE_BASE64" ]; then
             echo "$STORE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
             echo "STORE_KEYSTORE_FILE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
