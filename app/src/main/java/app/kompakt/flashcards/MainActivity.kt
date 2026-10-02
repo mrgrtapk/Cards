@@ -1,0 +1,98 @@
+package app.kompakt.flashcards
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.compose.setContent
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.Color
+import app.kompakt.flashcards.ui.FlashcardsRoot
+import com.mudita.mmd.ThemeMMD
+
+private val Black = Color(0xFF000000)
+private val White = Color(0xFFFFFFFF)
+
+/**
+ * Mudita's e-ink palette (same values as MMD's eInkColorScheme), but with every color
+ * role filled in. MMD leaves the "surface container" roles undefined, and newer
+ * versions of the Material top app bar paint with one of them, which crashes on launch.
+ *
+ * [ink] is the text color and [paper] the background: black on white normally, and the
+ * two swapped for dark mode, so every screen inverts exactly.
+ */
+private fun eInkColors(ink: Color, paper: Color) = lightColorScheme(
+    primary = ink,
+    onPrimary = paper,
+    primaryContainer = ink,
+    onPrimaryContainer = paper,
+    inversePrimary = paper,
+    secondary = paper,
+    onSecondary = ink,
+    secondaryContainer = ink,
+    onSecondaryContainer = paper,
+    tertiary = paper,
+    onTertiary = ink,
+    tertiaryContainer = ink,
+    onTertiaryContainer = paper,
+    background = paper,
+    onBackground = ink,
+    surface = paper,
+    onSurface = ink,
+    surfaceVariant = paper,
+    onSurfaceVariant = ink,
+    surfaceTint = paper,
+    inverseSurface = paper,
+    inverseOnSurface = ink,
+    error = ink,
+    onError = paper,
+    errorContainer = paper,
+    onErrorContainer = ink,
+    outline = ink,
+    outlineVariant = ink,
+    scrim = ink,
+    surfaceBright = paper,
+    surfaceDim = paper,
+    surfaceContainer = paper,
+    surfaceContainerHigh = paper,
+    surfaceContainerHighest = paper,
+    surfaceContainerLow = paper,
+    surfaceContainerLowest = paper,
+)
+
+private val LightColors = eInkColors(ink = Black, paper = White)
+private val DarkColors = eInkColors(ink = White, paper = Black)
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val app = application as FlashcardsApp
+        applySystemBars(app.settings.settings.value.darkMode)
+        setContent {
+            val dark = app.settings.settings.collectAsState().value.darkMode
+            // Draw behind the status/navigation bars (matching the page, with icons in the
+            // opposite color) so the app can see the keyboard and hide the bottom navigation.
+            LaunchedEffect(dark) { applySystemBars(dark) }
+            // Mudita Mindful Design theme: black/white e-ink palette, Lato type, no ripples.
+            val colors = if (dark) DarkColors else LightColors
+            ThemeMMD(colorScheme = colors) {
+                // Mudita's text and icons fall back to the "content color", which is black unless
+                // something sets it — so set it to the page's ink color for dark mode.
+                CompositionLocalProvider(LocalContentColor provides colors.onSurface) {
+                    FlashcardsRoot(app.store, app.settings)
+                }
+            }
+        }
+    }
+
+    private fun applySystemBars(dark: Boolean) {
+        val black = android.graphics.Color.BLACK
+        val white = android.graphics.Color.WHITE
+        val style = if (dark) SystemBarStyle.dark(black) else SystemBarStyle.light(white, white)
+        enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+    }
+}

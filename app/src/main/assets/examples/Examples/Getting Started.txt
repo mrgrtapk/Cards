@@ -1,0 +1,32 @@
+# Getting Started — a few cards about Cards itself. Delete this deck whenever you like.
+
+Q: What's the difference between Study and Practice?
+A: Study shows each card when it's due and spaces out your reviews so you remember them for longer.
+Practice runs through cards any time, in any mix, and doesn't change your schedule.
+
+Q: How do I study just one folder?
+A: Open the folder and tap ▷ at the top — the Study & Practice menu.
+It only uses the cards in that folder and the folders inside it.
+
+Q: How do I rename, move, export, or delete a deck or folder?
+A: Press and hold it.
+To do several at once, use ⋮ › Select.
+
+Q: What do the taps do in full-screen study?
+A: Middle: show the answer.
+Right side: next card.
+Left side: previous card.
+
+Q: How do I bring in cards I wrote on a computer?
+A: Copy the files to your device, then open Import and tap Choose files.
+Each file becomes a deck; folders become folders.
+
+Q: How do I write a quick card on a computer?
+A: One line per card, with two colons between the front and the back.
+The Import page's “How to write cards” section shows every format with examples.
+
+Q: How do I practice only the cards I find hard?
+A: Star them, then open Starred and tap ▷ — or choose Starred in a folder's ▷ menu.
+
+Q: How do I change the order of my decks?
+A: Press and hold any folder or deck and choose Sort (or use ⋮ › Sort), then use the arrows — or tap Sort A–Z.

@@ -1,0 +1,17 @@
+# World Capitals — written one card per line, with :: between the front and the back.
+
+Capital of Australia :: Canberra
+Capital of Canada :: Ottawa
+Capital of Brazil :: Brasília
+Capital of Turkey :: Ankara
+Capital of Nigeria :: Abuja
+Capital of Switzerland :: Bern
+Capital of New Zealand :: Wellington
+Capital of Morocco :: Rabat
+Capital of Vietnam :: Hanoi
+Capital of Kenya :: Nairobi
+Capital of Norway :: Oslo
+Capital of Peru :: Lima
+Capital of Egypt :: Cairo
+Capital of Pakistan :: Islamabad
+Capital of Myanmar :: Naypyidaw

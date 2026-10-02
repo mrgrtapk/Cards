@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Cards app icon as an unfilled outline, so it can be tinted for light or dark mode. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="56" android:viewportHeight="56">
+    <group android:translateX="-26" android:translateY="-26">
+        <path android:strokeColor="#FF000000" android:strokeWidth="4" android:strokeLineJoin="round"
+            android:fillColor="#00000000" android:pathData="M44,34H72A3,3 0,0 1,75 37V66"/>
+        <path android:strokeColor="#FF000000" android:strokeWidth="4" android:strokeLineJoin="round"
+            android:fillColor="#00000000" android:pathData="M36,42H64A3,3 0,0 1,67 45V71A3,3 0,0 1,64 74H36A3,3 0,0 1,33 71V45A3,3 0,0 1,36 42Z"/>
+        <path android:fillColor="#FF000000" android:pathData="M41,53h18v4h-18z"/>
+        <path android:fillColor="#FF000000" android:pathData="M41,61h11v4h-11z"/>
+    </group>
+</vector>

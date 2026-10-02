@@ -1,0 +1,18 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        // Mudita Mindful Design (com.mudita:MMD) is published on Maven Central.
+        mavenCentral()
+    }
+}
+
+rootProject.name = "Cards"
+include ':app'

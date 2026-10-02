@@ -1,0 +1,12 @@
+// Toolchain matches kSread, a Kompakt app that already builds against MMD 1.0.2.
+buildscript {
+    ext {
+        compose_bom_version = '2026.08.00'
+    }
+}
+
+plugins {
+    id 'com.android.application' version '9.4.0' apply false
+    // AGP 9 has Kotlin built in; the Compose compiler plugin sets the Kotlin version.
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.4.10' apply false
+}

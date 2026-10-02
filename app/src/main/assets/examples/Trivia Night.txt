@@ -1,0 +1,49 @@
+# Trivia Night — Jeopardy-style: the clue is on the front; answer in the form of a question.
+
+Q: This planet's day is longer than its year: it takes about 243 Earth days to spin once, but only about 225 to orbit the Sun
+A: What is Venus?
+Venus also spins backward compared with most planets, so on Venus the Sun rises in the west.
+
+Q: Napoleon's soldiers found this stone in 1799; its decree in three scripts helped Champollion decipher hieroglyphs
+A: What is the Rosetta Stone?
+The 196 B.C. decree appears in hieroglyphs, Demotic and ancient Greek. The British took it in 1801, and it has been in the British Museum since 1802.
+
+Q: This element, symbol W, has the highest melting point of any metal
+A: What is tungsten?
+Tungsten melts at about 3,422 °C. Its symbol comes from its other name, wolfram, after the mineral wolframite.
+
+Q: Completed in 1889 for a world's fair, this tower was meant to stand for only 20 years
+A: What is the Eiffel Tower?
+Built for the Exposition Universelle marking the centenary of the French Revolution, it survived partly because it proved useful for radio transmission.
+
+Q: This composer was almost completely deaf when his Ninth Symphony premiered in 1824
+A: Who is Ludwig van Beethoven?
+At the Vienna premiere, a singer is said to have turned him around so he could see the applause he couldn't hear.
+
+Q: The only letter that doesn't appear in the name of any U.S. state
+A: What is Q?
+Every other letter of the alphabet appears in at least one of the 50 state names.
+
+Q: This mountain, not Everest, is the farthest point on Earth from the planet's center
+A: What is Chimborazo?
+Ecuador's Chimborazo sits near the equator, where Earth bulges outward, so its summit is about 2 km farther from the center than Everest's.
+
+Q: In 1928 this Scottish scientist noticed mold killing bacteria on a culture plate he'd left out
+A: Who is Alexander Fleming?
+The mold was Penicillium notatum. Howard Florey and Ernst Chain later turned penicillin into a usable drug, and all three shared the 1945 Nobel Prize.
+
+Q: This shortest war in recorded history, in 1896, lasted roughly 40 minutes
+A: What is the Anglo-Zanzibar War?
+British ships bombarded the Sultan's palace in Zanzibar after Khalid bin Barghash took power without British approval.
+
+Q: Octopuses have three of these, and their blood is blue
+A: What are hearts?
+Two hearts pump blood through the gills and one through the rest of the body. The blood is blue because it carries oxygen with copper-based hemocyanin.
+
+Q: This language has the most native speakers in the world
+A: What is Mandarin Chinese?
+English has more speakers in total once second-language speakers are counted, but Mandarin leads by native speakers.
+
+Q: The Treaty of Westphalia, signed in 1648, ended this long European war
+A: What is the Thirty Years' War?
+The Peace of Westphalia is often called the start of the modern system of sovereign states.
