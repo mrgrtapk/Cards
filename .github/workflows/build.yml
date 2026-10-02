@@ -41,14 +41,23 @@ jobs:
           STORE_KEY_PASSWORD: ${{ secrets.STORE_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
+          set -o pipefail
           if [ -n "$STORE_KEYSTORE_FILE" ]; then
-            ./gradlew assembleRelease test --no-daemon
+            ./gradlew assembleRelease test --no-daemon 2>&1 | tee build.log
             cp app/build/outputs/apk/release/app-release.apk Cards.apk
           else
             # No signing key available (e.g. a fork): a debug build for testing.
-            ./gradlew assembleDebug test --no-daemon
+            ./gradlew assembleDebug test --no-daemon 2>&1 | tee build.log
             cp app/build/outputs/apk/debug/app-debug.apk Cards.apk
           fi
+
+      # If the build fails, show the compiler's errors on the run's summary page.
+      - name: Report errors
+        if: failure()
+        run: |
+          grep -E -A4 "^e: |What went wrong" build.log | grep -v "^> Task" | head -40 | while IFS= read -r line; do
+            echo "::error::${line//%/%25}"
+          done
 
       - uses: actions/upload-artifact@v4
         with:
