@@ -97,8 +97,10 @@ private fun runChecks() {
     check("page example 2", ex2.cards.size == 1 && ex2.warnings.isEmpty())
     val ex3 = DeckParser.parse("a.csv", "Front,Back\ngato,cat\nperro,dog")
     check("page example 3", ex3.cards == listOf("gato" to "cat", "perro" to "dog"))
-    val start = DeckParser.parse("Start here.txt", java.io.File("../Sample Flashcards/Start here.txt").readText())
-    check("sample 'Start here' parses cleanly", start.cards.size == 7 && start.warnings.isEmpty(), start.warnings)
+    java.io.File("src/main/assets/examples").walkTopDown().filter { it.isFile }.forEach { f ->
+        val r = DeckParser.parse(f.name, f.readText())
+        check("example '${f.name}' parses cleanly", r.cards.isNotEmpty() && r.warnings.isEmpty(), r.warnings)
+    }
 
     println("Stars, move, search, shuffle")
     run {
