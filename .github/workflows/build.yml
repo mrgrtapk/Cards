@@ -36,21 +36,62 @@ jobs:
           for name in STORE_KEYSTORE_BASE64 STORE_KEYSTORE_PASSWORD STORE_KEY_ALIAS STORE_KEY_PASSWORD; do
             if [ -n "${!name}" ]; then echo "::notice::$name is set"; else echo "::warning::$name is missing"; fi
           done
-          # A version tag must produce a signed release, so stop if the key isn't there.
-          if [ -z "$STORE_KEYSTORE_BASE64" ] && [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            echo "::error::The signing secrets aren't set, so the release can't be signed."
-            exit 1
-          fi
-          if [ -n "$STORE_KEYSTORE_BASE64" ]; then
-            echo "$STORE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
-            echo "STORE_KEYSTORE_FILE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+          if [ -z "$STORE_KEYSTORE_BASE64" ]; then
+            # A version tag must produce a signed release, so stop if the key isn't there.
+            if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+              echo "::error::The signing secrets aren't set, so the release can't be signed."
+              exit 1
+            fi
+            exit 0
           fi
 
+          # Ignore spaces or line breaks picked up when the values were pasted in.
+          strip() { printf '%s' "$1" | tr -d ' \t\r\n'; }
+          KS="$RUNNER_TEMP/release.keystore"
+          if ! strip "$STORE_KEYSTORE_BASE64" | base64 -d > "$KS" 2>/dev/null; then
+            echo "::error::STORE_KEYSTORE_BASE64 isn't the complete key. Copy the whole long line again."
+            exit 1
+          fi
+          STORE_PW=$(strip "$STORE_KEYSTORE_PASSWORD")
+          KEY_PW=$(strip "$STORE_KEY_PASSWORD")
+          ALIAS=$(strip "$STORE_KEY_ALIAS")
+          echo "::add-mask::$STORE_PW"
+          echo "::add-mask::$KEY_PW"
+
+          # Check each value against the key, and say exactly which one is wrong.
+          ok=true
+          if ! keytool -list -keystore "$KS" -storepass "$STORE_PW" >/dev/null 2>&1; then
+            echo "::error::STORE_KEYSTORE_PASSWORD doesn't match the key (or STORE_KEYSTORE_BASE64 is incomplete)."
+            ok=false
+          else
+            echo "::notice::STORE_KEYSTORE_BASE64 and STORE_KEYSTORE_PASSWORD are correct"
+            if ! keytool -list -keystore "$KS" -storepass "$STORE_PW" -alias "$ALIAS" >/dev/null 2>&1; then
+              echo "::error::STORE_KEY_ALIAS is wrong. It should be: cards"
+              ok=false
+            else
+              echo "::notice::STORE_KEY_ALIAS is correct"
+              # keytool doesn't test the key's own password, so a few lines of Java do.
+              printf '%s\n' 'public class KeyCheck { public static void main(String[] a) throws Exception {' \
+                '  java.security.KeyStore.getInstance(new java.io.File(a[0]), a[1].toCharArray())' \
+                '    .getKey(a[2], a[3].toCharArray()); } }' > "$RUNNER_TEMP/KeyCheck.java"
+              if ! java "$RUNNER_TEMP/KeyCheck.java" "$KS" "$STORE_PW" "$ALIAS" "$KEY_PW" >/dev/null 2>&1; then
+                echo "::error::STORE_KEY_PASSWORD doesn't match the key."
+                ok=false
+              else
+                echo "::notice::STORE_KEY_PASSWORD is correct"
+              fi
+            fi
+          fi
+          $ok || exit 1
+
+          {
+            echo "STORE_KEYSTORE_FILE=$KS"
+            echo "STORE_KEYSTORE_PASSWORD=$STORE_PW"
+            echo "STORE_KEY_ALIAS=$ALIAS"
+            echo "STORE_KEY_PASSWORD=$KEY_PW"
+          } >> "$GITHUB_ENV"
+
       - name: Build and test
-        env:
-          STORE_KEYSTORE_PASSWORD: ${{ secrets.STORE_KEYSTORE_PASSWORD }}
-          STORE_KEY_ALIAS: ${{ secrets.STORE_KEY_ALIAS }}
-          STORE_KEY_PASSWORD: ${{ secrets.STORE_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           set -o pipefail
