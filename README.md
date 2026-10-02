@@ -1,16 +1,16 @@
 # Cards
 
-**Flashcards for calm, focused study, made for e-ink devices.**
+**Flashcards for calm, focused study, made for e-ink devices, and inspired by Mudita Mindful Design.**
 
 ![Cards on e-ink devices: a card and its answer, Home in light and dark mode, Import, and Settings](docs/mockup.png)
 
-I've been needing a good flashcard app for all of my e-ink devices, and I couldn't find one, so I made one myself. Cards is simple, quiet, and easy on an e-ink screen. There are no animations, no clutter, and no distractions, just your cards.
+I've been needing a good flashcard app for all of my e-ink devices, and I couldn't find one, so I made one myself. Cards is simple, quiet, and easy on any e-ink screen. There are no animations, no clutter, and no distractions.
 
-It was designed for the Mudita Kompakt, and it works on other Android e-ink phones, tablets, and readers too.
+It was designed for the Mudita Kompakt and my Supernote Manta, and it works on other Android e-ink phones, tablets, and readers too.
 
 ---
 
-## Private and secure. Nothing leaves the app.
+## Private and secure.
 
 Cards is **completely offline**. I wouldn't have felt comfortable making this app without these protections, and that's why it works this way:
 
@@ -45,11 +45,11 @@ Cards is **completely offline**. I wouldn't have felt comfortable making this ap
 2. Open the file on your device. If Android asks, allow installing apps from that source.
 3. Open **Cards**. A short welcome explains the basics.
 
-> **Mudita Kompakt:** turn on USB file transfer in the Kompakt's Settings, copy the APK to the phone over USB, then open it on the phone to install.
+> **Mudita Kompakt users:** turn on USB file transfer in the Kompakt's Settings, copy the APK to the phone over USB, then open it on the phone to install.
 
 ---
 
-## Getting your cards in
+## Importing your cards
 
 1. **Write your cards** in any plain-text app, or save a spreadsheet as `.csv`.
 2. **Copy the files to your device,** over USB or by downloading them.
