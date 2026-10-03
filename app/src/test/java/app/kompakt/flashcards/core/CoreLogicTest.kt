@@ -56,6 +56,37 @@ private fun runChecks() {
         "Next?" to "Yes", "front" to "back", "last" to "one"), rs.cards)
     check("blank-line answers round-trip", DeckParser.parse("s.txt", DeckParser.format(rs.cards)).cards == rs.cards, DeckParser.format(rs.cards))
 
+    println("Anki plain-text export")
+    val ankiNew = listOf(
+        "#separator:tab", "#html:true", "#guid column:1", "#notetype column:2", "#deck column:3", "#tags column:6",
+        "g1\tBasic\tBar::Evidence\tHearsay?\tAn <b>out-of-court</b> statement<br>offered for its truth&nbsp;&amp; more\ttag1",
+        "g2\tBasic (and reversed card)\tSpanish\tgato\tcat\t",
+        "g3\tCloze\tBar::Evidence\t{{c1::Erie}} applies {{c2::state::which law?}} substantive law\tBack extra here\t",
+        "g4\tBasic\tSpanish\t\"Line one<div>line \"\"two\"\"</div>\"\t\"multi\nline\"\t",
+        "g5\tBasic\tSpanish\t<img src=\"x.png\">\tpicture\t",
+    ).joinToString("\n")
+    check("anki export detected", AnkiText.looksLikeAnki("export.txt", ankiNew))
+    val ak = AnkiText.parse("export.txt", ankiNew)
+    val evidence = ak.decks.first { it.name == "Evidence" }
+    val spanish = ak.decks.first { it.name == "Spanish" }
+    check("anki sub-decks become folders", evidence.folders == listOf("Bar") && spanish.folders.isEmpty(), ak.decks.map { it.folders to it.name })
+    check("anki html to text", evidence.cards[0] == ("Hearsay?" to "An out-of-court statement\noffered for its truth & more"), evidence.cards[0])
+    check("anki cloze, one card per blank", evidence.cards.drop(1) == listOf(
+        "[…] applies state substantive law" to "Erie applies state substantive law\nBack extra here",
+        "Erie applies [which law?] substantive law" to "Erie applies state substantive law\nBack extra here",
+    ), evidence.cards)
+    check("anki reversed + quoted fields", spanish.cards == listOf(
+        "gato" to "cat", "cat" to "gato", "Line one\nline \"two\"" to "multi\nline",
+    ), spanish.cards)
+    check("anki image-only note skipped, media counted", ak.warnings.size == 2 && ak.warnings.any { "1 image" in it }, ak.warnings)
+    val ankiOld = "gato\tcat\tanimals\nperro\t\"dog\" (pet)\t\n"
+    check("older anki export (no header) detected", AnkiText.looksLikeAnki("Spanish.txt", ankiOld))
+    check("older anki export parsed", AnkiText.parse("Spanish.txt", ankiOld).decks.single().let { it.name == "Spanish" && it.cards == listOf("gato" to "cat", "perro" to "\"dog\" (pet)") })
+    check("Cards' own format isn't mistaken for Anki", !AnkiText.looksLikeAnki("x.txt", "Photosynthesis :: Turning light into food\nQ: a\nA: b"))
+    val (ankiLib, ankiReport) = LibraryData().importFiles(listOf(IncomingFile("Downloads/export.txt", ankiNew)))
+    check("anki import builds folders and decks", ankiLib.folders.map { it.name }.toSet() == setOf("Downloads", "Bar") &&
+        ankiLib.decks.map { it.name }.toSet() == setOf("Evidence", "Spanish") && ankiLib.cards.size == 6, ankiReport)
+
     println("Import / merge")
     val files = listOf(
         IncomingFile("Law/Evidence/Hearsay.md", txt),

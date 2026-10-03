@@ -370,7 +370,19 @@ fun LibraryData.importFiles(
         if (split == null) {
             ignored += file.path; continue
         }
-        val result = DeckParser.parse(file.path.substringAfterLast('/'), file.content)
+        val fileName = file.path.substringAfterLast('/')
+        // An Anki "Notes in Plain Text" export: may hold several decks (Anki's sub-decks become
+        // folders, under whatever folder the file itself was in).
+        if (AnkiText.looksLikeAnki(fileName, file.content)) {
+            val anki = AnkiText.parse(fileName, file.content)
+            warnings += anki.warnings
+            for (deck in anki.decks) {
+                val key = (split.first + deck.folders) to deck.name
+                parsedByDeck.getOrPut(key) { mutableListOf() }.addAll(deck.cards)
+            }
+            continue
+        }
+        val result = DeckParser.parse(fileName, file.content)
         warnings += result.warnings
         parsedByDeck.getOrPut(split) { mutableListOf() }.addAll(result.cards)
     }

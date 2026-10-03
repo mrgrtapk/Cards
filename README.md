@@ -34,7 +34,7 @@ Cards is **completely offline**. I wouldn't have felt comfortable making this ap
 - **Centered or left-aligned cards,** whichever is easier for you to read.
 - **Choose which cards.** Pick all of them, or any mix of due, new, and starred cards.
 - **Stars, search, and shuffle.**
-- **Write cards right on your device,** or write them on a computer and import them.
+- **Write cards right on your device,** or write them on a computer and import them. Anki decks can be imported too.
 - **Dark mode** that swaps black and white.
 - **Easy on e-ink:** high contrast, generous spacing, large touch targets, and Mudita's e-ink design components.
 - **Examples included:** a Getting Started deck, World Capitals, Spanish Basics, and a Jeopardy-style Trivia Night deck.
@@ -84,6 +84,8 @@ Front,Back
 gato,cat
 perro,dog
 ```
+
+**From Anki.** In Anki, choose **File › Export…**, pick **Notes in Plain Text (.txt)**, and tick **Include deck name** and **Include notetype name**. Import the .txt in Cards: Anki's decks and sub-decks become decks and folders, and each cloze blank becomes its own card. Images and sounds are left out, and cards start fresh (Anki's review history isn't carried over).
 
 **Folders.** Folders on your computer become folders in Cards. Lines that start with `#` are ignored, so you can use them as headings.
 

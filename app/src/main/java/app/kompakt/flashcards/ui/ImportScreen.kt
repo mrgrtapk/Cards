@@ -322,6 +322,11 @@ fun FormatGuide() {
             caption = "Save as .csv — column A is the front, column B the back.",
         )
         GuideCard(
+            title = "From Anki",
+            sample = "File › Export…\nNotes in Plain Text (.txt)\n✓ Include deck name\n✓ Include notetype name",
+            caption = "Then import the .txt here. Anki decks and sub-decks become decks and folders, and each cloze blank becomes its own card. Images and sounds are left out.",
+        )
+        GuideCard(
             title = "Folders",
             sample = "Science/\n  Biology/\n    Cells.txt\nSpanish.csv",
             caption = "Folders on your computer become folders in Cards. Lines starting with # are ignored, so headings are fine.",
