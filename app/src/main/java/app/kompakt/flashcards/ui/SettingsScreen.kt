@@ -379,10 +379,19 @@ fun CustomizeScreen(settingsStore: SettingsStore, nav: Navigator) {
                     )
                 }
             }
+            item(key = "fs-note") {
+                TextMMD(
+                    text = "The Edit and Star buttons appear once the answer shows.",
+                    fontSize = 15.sp,
+                    lineHeight = 21.sp,
+                    color = MutedText,
+                    modifier = Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 2.dp, bottom = 4.dp),
+                )
+            }
             item(key = "fs-edit") {
                 SwitchRow(
                     title = "Show Edit button",
-                    subtitle = "Appears once the answer shows.",
+                    subtitle = null,
                     checked = settings.fullScreenEdit,
                 ) { on -> settingsStore.update { it.copy(fullScreenEdit = on) } }
             }
@@ -396,7 +405,7 @@ fun CustomizeScreen(settingsStore: SettingsStore, nav: Navigator) {
             item(key = "fs-all-cards") {
                 SwitchRow(
                     title = "Show All cards button",
-                    subtitle = "Jump to any card in the session.",
+                    subtitle = null,
                     checked = settings.fullScreenAllCards,
                 ) { on -> settingsStore.update { it.copy(fullScreenAllCards = on) } }
             }

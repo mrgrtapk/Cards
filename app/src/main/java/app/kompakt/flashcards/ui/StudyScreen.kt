@@ -202,11 +202,11 @@ fun StudyScreen(store: LibraryStore, settingsStore: SettingsStore, route: Route.
                 leftAlign = settings.leftAlignCards,
                 actions = {
                     // Optional buttons (Settings › Customization › Full-screen options), the
-                    // same as in the regular view: Edit once the answer shows, Star, All cards.
+                    // Edit and Star once the answer shows; All cards any time.
                     if (settings.fullScreenEdit && revealed) {
                         IconAction(R.drawable.ic_edit, "Edit card") { editingCardId = current.id }
                     }
-                    if (settings.fullScreenStar) {
+                    if (settings.fullScreenStar && revealed) {
                         StarButton(current.starred) { store.update { it.toggleStar(current.id) } }
                     }
                     if (settings.fullScreenAllCards) {
