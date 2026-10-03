@@ -48,6 +48,14 @@ private fun runChecks() {
     val back = DeckParser.parse("x.txt", formatted)
     check("format round-trips", back.cards == r.cards, formatted)
 
+    // A blank line inside an answer is kept; a blank line before a new card still separates.
+    val spaced = "Q: Hearsay — elements?\nA: • Out-of-court statement\n• Offered for its truth\n\nNote: the law has changed.\n\nQ: Next?\nA: Yes\n\nfront :: back\n\n# heading\nlast :: one"
+    val rs = DeckParser.parse("s.txt", spaced)
+    check("blank line kept inside an answer", rs.cards == listOf(
+        "Hearsay — elements?" to "• Out-of-court statement\n• Offered for its truth\n\nNote: the law has changed.",
+        "Next?" to "Yes", "front" to "back", "last" to "one"), rs.cards)
+    check("blank-line answers round-trip", DeckParser.parse("s.txt", DeckParser.format(rs.cards)).cards == rs.cards, DeckParser.format(rs.cards))
+
     println("Import / merge")
     val files = listOf(
         IncomingFile("Law/Evidence/Hearsay.md", txt),

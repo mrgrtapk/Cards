@@ -12,6 +12,9 @@ package app.kompakt.flashcards.core
  *      on following lines)           between cards
  *   A: answer
  *
+ *      more answer                   a blank line inside an answer is kept, as
+ *                                    long as the next line isn't a new card
+ *
  *   # Heading   or   // note         ignored
  *
  * .csv files: first column = front, second column = back
@@ -49,6 +52,9 @@ object DeckParser {
         var back: StringBuilder? = null
         var field = 0 // 0 = not in a Q/A block, 1 = reading question, 2 = reading answer
         var blockStart = 0
+        // A blank line inside an answer: kept if more answer follows, or ends the card if a
+        // new card (Q:, front :: back, front<TAB>back) or a comment comes next.
+        var blankInAnswer = false
 
         fun flush() {
             if (field != 0) {
@@ -60,7 +66,7 @@ object DeckParser {
                     else -> cards += f to b
                 }
             }
-            front = null; back = null; field = 0
+            front = null; back = null; field = 0; blankInAnswer = false
         }
 
         text.split('\n').forEachIndexed { index, raw ->
@@ -68,7 +74,19 @@ object DeckParser {
             val t = raw.trim()
             val qMatch = Q_PREFIX.find(t)
             val aMatch = A_PREFIX.find(t)
+            if (blankInAnswer && t.isNotEmpty()) {
+                val startsNewCard = qMatch != null || aMatch != null || t.contains("::") || t.contains('\t') ||
+                    t.startsWith("#") || t.startsWith("//")
+                if (startsNewCard) {
+                    flush()
+                } else {
+                    back!!.append("\n\n").append(t)
+                    blankInAnswer = false
+                    return@forEachIndexed
+                }
+            }
             when {
+                t.isEmpty() && field == 2 -> blankInAnswer = true
                 t.isEmpty() -> flush()
 
                 qMatch != null -> {
@@ -194,7 +212,9 @@ object DeckParser {
             } else {
                 if (isNotEmpty() && !endsWith("\n\n")) append('\n')
                 append("Q: ").append(noBlankLines(front)).append('\n')
-                append("A: ").append(noBlankLines(back)).append("\n\n")
+                // Blank lines inside an answer survive the round trip, unless a paragraph
+                // could be mistaken for a new card.
+                append("A: ").append(if (back.contains("::") || back.contains('\t')) noBlankLines(back) else back).append("\n\n")
             }
         }
     }
