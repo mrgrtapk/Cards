@@ -200,6 +200,19 @@ fun StudyScreen(store: LibraryStore, settingsStore: SettingsStore, route: Route.
                 backSize = settings.backSize,
                 revealed = revealed,
                 leftAlign = settings.leftAlignCards,
+                actions = {
+                    // Optional buttons (Settings › Customization › Full-screen options), the
+                    // same as in the regular view: Edit once the answer shows, Star, All cards.
+                    if (settings.fullScreenEdit && revealed) {
+                        IconAction(R.drawable.ic_edit, "Edit card") { editingCardId = current.id }
+                    }
+                    if (settings.fullScreenStar) {
+                        StarButton(current.starred) { store.update { it.toggleStar(current.id) } }
+                    }
+                    if (settings.fullScreenAllCards) {
+                        IconAction(R.drawable.ic_list, "Go to a card") { choosingCard = true }
+                    }
+                },
                 onMiddle = { if (!revealed) revealed = true },
                 onLeft = ::previous,
                 onRight = { next(current) },
@@ -317,6 +330,7 @@ private fun FullScreenCard(
     backSize: TextSize,
     revealed: Boolean,
     leftAlign: Boolean,
+    actions: @Composable RowScope.() -> Unit,
     onMiddle: () -> Unit,
     onLeft: () -> Unit,
     onRight: () -> Unit,
@@ -354,11 +368,13 @@ private fun FullScreenCard(
                 CardText(card, frontSize, backSize, revealed, leftAlign)
             }
         }
-        Box(
+        Row(
             Modifier
                 .align(Alignment.TopEnd)
                 .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
+            actions()
             IconAction(R.drawable.ic_fullscreen_exit, "Regular view", onClick = onExit)
         }
     }

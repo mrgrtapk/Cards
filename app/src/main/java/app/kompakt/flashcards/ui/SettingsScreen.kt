@@ -108,7 +108,7 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
                     checked = settings.showShuffleButton,
                 ) { on -> settingsStore.update { it.copy(showShuffleButton = on) } }
             }
-            item(key = "h-buttons") { SectionHeader("Customize") }
+            item(key = "h-buttons") { SectionHeader("Customization") }
             item(key = "customize") {
                 Box(Modifier.fillMaxWidth().padding(start = ScreenPadding - 12.dp, end = ScreenPadding, top = 2.dp, bottom = 2.dp)) {
                     SeeMoreLink("Customize further", bold = false) { nav.go(Route.Customize) }
@@ -318,11 +318,11 @@ private fun NavTabRow(
     }
 }
 
-/** Settings › Customize further: what shows on each page. */
+/** Settings › Customize further: the Customization page — what shows on each page. */
 @Composable
 fun CustomizeScreen(settingsStore: SettingsStore, nav: Navigator) {
     val settings by settingsStore.settings.collectAsState()
-    ScreenScaffold(title = "Customize", subtitle = "Settings", onBack = nav::back) {
+    ScreenScaffold(title = "Customization", subtitle = "Settings", onBack = nav::back) {
         LazyColumnMMD(modifier = Modifier.fillMaxSize(), scrollStep = 2) {
             item(key = "h-menu") {
                 IconSectionHeader("Study & Practice options") {
@@ -369,7 +369,38 @@ fun CustomizeScreen(settingsStore: SettingsStore, nav: Navigator) {
                     checked = settings.showTipsButton,
                 ) { on -> settingsStore.update { it.copy(showTipsButton = on) } }
             }
-            item(key = "h-counts") { IconSectionHeader("Counts") { NumberBadge() } }
+            item(key = "h-full-screen") {
+                IconSectionHeader("Full-screen options") {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_fullscreen),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+            }
+            item(key = "fs-edit") {
+                SwitchRow(
+                    title = "Show Edit button",
+                    subtitle = "Appears once the answer shows.",
+                    checked = settings.fullScreenEdit,
+                ) { on -> settingsStore.update { it.copy(fullScreenEdit = on) } }
+            }
+            item(key = "fs-star") {
+                SwitchRow(
+                    title = "Show Star button",
+                    subtitle = null,
+                    checked = settings.fullScreenStar,
+                ) { on -> settingsStore.update { it.copy(fullScreenStar = on) } }
+            }
+            item(key = "fs-all-cards") {
+                SwitchRow(
+                    title = "Show All cards button",
+                    subtitle = "Jump to any card in the session.",
+                    checked = settings.fullScreenAllCards,
+                ) { on -> settingsStore.update { it.copy(fullScreenAllCards = on) } }
+            }
+            item(key = "h-counts") { IconSectionHeader("Counts options") { NumberBadge() } }
             item(key = "show-cards") {
                 SwitchRow(
                     title = "Show card counts",
