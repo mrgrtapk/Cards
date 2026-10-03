@@ -82,7 +82,7 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
             item(key = "h-buttons") { SectionHeader("Customize") }
             item(key = "customize") {
                 Box(Modifier.fillMaxWidth().padding(start = ScreenPadding - 12.dp, end = ScreenPadding, top = 2.dp, bottom = 2.dp)) {
-                    SeeMoreLink("See more customization options", bold = false) { nav.go(Route.Customize) }
+                    SeeMoreLink("Customize further", bold = false) { nav.go(Route.Customize) }
                 }
             }
             item(key = "h-nav") { SectionHeader("Navigation bar") }
@@ -165,7 +165,7 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
             item(key = "h-about") { SectionHeader("About") }
             item(key = "about") {
                 Row(
-                    Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 6.dp, bottom = if (BuildConfig.PUBLIC_EDITION) 4.dp else 32.dp),
+                    Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 6.dp, bottom = 4.dp),
                     verticalAlignment = Alignment.Top,
                 ) {
                     Icon(
@@ -185,11 +185,9 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
                     )
                 }
             }
-            if (BuildConfig.PUBLIC_EDITION) {
-                item(key = "welcome-again") {
-                    Box(Modifier.fillMaxWidth().padding(start = ScreenPadding - 12.dp, bottom = 24.dp)) {
-                        SeeMoreLink("Show welcome tips", bold = false) { settingsStore.update { it.copy(seenWelcome = false) } }
-                    }
+            item(key = "welcome-again") {
+                Box(Modifier.fillMaxWidth().padding(start = ScreenPadding - 12.dp, bottom = 24.dp)) {
+                    SeeMoreLink("Show welcome tips", bold = false) { settingsStore.update { it.copy(seenWelcome = false) } }
                 }
             }
         }
@@ -291,14 +289,14 @@ private fun NavTabRow(
     }
 }
 
-/** Settings › See more customization options: what shows on each page. */
+/** Settings › Customize further: what shows on each page. */
 @Composable
 fun CustomizeScreen(settingsStore: SettingsStore, nav: Navigator) {
     val settings by settingsStore.settings.collectAsState()
     ScreenScaffold(title = "Customize", subtitle = "Settings", onBack = nav::back) {
         LazyColumnMMD(modifier = Modifier.fillMaxSize(), scrollStep = 2) {
             item(key = "h-menu") {
-                IconSectionHeader("Study & practice options") {
+                IconSectionHeader("Study & Practice options") {
                     Icon(
                         painter = painterResource(R.drawable.ic_play_filled),
                         contentDescription = null,

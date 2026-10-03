@@ -26,8 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.kompakt.flashcards.BuildConfig
 import app.kompakt.flashcards.R
 import app.kompakt.flashcards.core.IncomingFile
+import app.kompakt.flashcards.data.NavTab
 import com.mudita.mmd.components.text.TextMMD
 
 /**
@@ -36,7 +38,7 @@ import com.mudita.mmd.components.text.TextMMD
  * ways of studying, writing and importing cards.
  */
 @Composable
-fun WelcomeDialog(onDone: () -> Unit) {
+fun WelcomeDialog(mentionExamples: Boolean = true, onDone: () -> Unit) {
     DialogFrame(onDismiss = onDone) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
@@ -56,7 +58,7 @@ fun WelcomeDialog(onDone: () -> Unit) {
             TextMMD(text = "Welcome to Cards", fontSize = 23.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
             Spacer(Modifier.height(6.dp))
             TextMMD(
-                text = "Flashcards for calm, focused study. A few example decks are on Home to try.",
+                text = "Flashcards for calm, focused study." + if (mentionExamples) " A few example decks are on Home to try." else "",
                 fontSize = 15.sp,
                 lineHeight = 21.sp,
                 textAlign = TextAlign.Center,
@@ -72,7 +74,12 @@ fun WelcomeDialog(onDone: () -> Unit) {
             WelcomeTip(R.drawable.ic_play, "The ▷ Study & Practice menu", "in the top navigation starts studying or practicing just that page's contents.")
             WelcomeTip(R.drawable.ic_list, "Study or Practice?", "Study shows cards when they're due, so you remember them longer. Practice runs through cards any time without changing that schedule.")
             WelcomeTip(R.drawable.ic_add, "Tap +", "to write a card, deck, or folder right on your device.")
-            WelcomeTip(R.drawable.ic_import, "Import", "brings in decks you write on a computer. The Import page shows how.")
+            WelcomeTip(
+                NavTab.SYNC.icon(),
+                NavTab.SYNC.title,
+                if (BuildConfig.SYNC_ENABLED) "brings in decks you write on a computer, over Wi‑Fi. The Sync page shows how."
+                else "brings in decks you write on a computer. The Import page shows how.",
+            )
         }
         Spacer(Modifier.height(14.dp))
         PrimaryButton("Get started", onDone)

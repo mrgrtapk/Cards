@@ -124,10 +124,10 @@ fun FlashcardsRoot(store: LibraryStore, settingsStore: SettingsStore) {
         )
     }
 
-    // Public edition, first launch: add the example decks (only into an empty library).
+    // First launch: add the example decks (only into an empty library).
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        if (BuildConfig.PUBLIC_EDITION && !settingsStore.settings.value.seededExamples) {
+        if (!settingsStore.settings.value.seededExamples) {
             if (store.data.value.decks.isEmpty() && store.data.value.folders.isEmpty()) {
                 val files = withContext(Dispatchers.IO) { runCatching { readExampleDecks(context) }.getOrDefault(emptyList()) }
                 if (files.isNotEmpty()) store.importFiles(files)
@@ -220,11 +220,13 @@ fun FlashcardsRoot(store: LibraryStore, settingsStore: SettingsStore) {
         }
     }
 
-    if (BuildConfig.PUBLIC_EDITION && !settings.seenWelcome) {
-        WelcomeDialog { settingsStore.update { it.copy(seenWelcome = true) } }
+    if (!settings.seenWelcome) {
+        // Mention the example decks only if they're actually on Home.
+        val hasExamples = store.data.value.folders.any { it.parentId == null && it.name == "Examples" }
+        WelcomeDialog(mentionExamples = hasExamples) { settingsStore.update { it.copy(seenWelcome = true) } }
     }
 
-    if (askBackup && (settings.seenWelcome || !BuildConfig.PUBLIC_EDITION)) {
+    if (askBackup && settings.seenWelcome) {
         val later = {
             askBackup = false
             settingsStore.update { it.copy(backupPromptAt = System.currentTimeMillis()) }
