@@ -64,6 +64,35 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
             item(key = "back") {
                 SizeChoice("Back", settings.backSize) { size -> settingsStore.update { it.copy(backSize = size) } }
             }
+            item(key = "align") {
+                Column {
+                    TextMMD(
+                        text = "Alignment",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 10.dp, bottom = 8.dp),
+                    )
+                    Choice(
+                        options = listOf(false to "Centered", true to "Left"),
+                        selected = settings.leftAlignCards,
+                    ) { left -> settingsStore.update { it.copy(leftAlignCards = left) } }
+                }
+            }
+            item(key = "h-double-tap") { SectionHeader("Double-tap") }
+            item(key = "double-tap") {
+                Column {
+                    TextMMD(
+                        text = "Double-tap a folder or deck to open its cards in full screen, in:",
+                        fontSize = 16.sp,
+                        lineHeight = 22.sp,
+                        modifier = Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 4.dp, bottom = 10.dp),
+                    )
+                    Choice(
+                        options = listOf(true to "Practice", false to "Study"),
+                        selected = settings.doubleTapPractice,
+                    ) { practice -> settingsStore.update { it.copy(doubleTapPractice = practice) } }
+                }
+            }
             item(key = "h-study") { SectionHeader("Shuffle option") }
             item(key = "shuffle") {
                 SwitchRow(

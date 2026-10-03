@@ -50,8 +50,14 @@ data class AppSettings(
     val studyFullScreen: Boolean = true,
     /** The full-screen how-to has been shown once. */
     val seenStudyTips: Boolean = false,
-    /** Public edition: the welcome pop-up has been shown. */
+    /** The welcome pop-up has been shown. */
     val seenWelcome: Boolean = false,
+    /** Which version of the welcome tips was last shown (a newer one shows again after an update). */
+    val welcomeVersionSeen: Int = 0,
+    /** Double-tapping a folder or deck opens its cards full screen in Practice (true) or Study (false). */
+    val doubleTapPractice: Boolean = true,
+    /** Card text and the rule between question and answer: left-aligned instead of centered. */
+    val leftAlignCards: Boolean = false,
     /** Public edition: the example decks have been added (once, on first launch). */
     val seededExamples: Boolean = false,
     /** The full-screen how-to has been shown before a first Practice session. */
@@ -114,6 +120,9 @@ class SettingsStore(context: Context) {
             .putBoolean(KEY_FULL_SCREEN, next.studyFullScreen)
             .putBoolean(KEY_SEEN_TIPS, next.seenStudyTips)
             .putBoolean(KEY_SEEN_WELCOME, next.seenWelcome)
+            .putInt(KEY_WELCOME_VERSION, next.welcomeVersionSeen)
+            .putBoolean(KEY_DOUBLE_TAP_PRACTICE, next.doubleTapPractice)
+            .putBoolean(KEY_LEFT_ALIGN, next.leftAlignCards)
             .putBoolean(KEY_SEEDED, next.seededExamples)
             .putBoolean(KEY_SEEN_PRACTICE_TIPS, next.seenPracticeTips)
             .putBoolean(KEY_SEEN_MODES, next.seenModesTips)
@@ -164,6 +173,9 @@ class SettingsStore(context: Context) {
             studyFullScreen = prefs.getBoolean(KEY_FULL_SCREEN, defaults.studyFullScreen),
             seenStudyTips = prefs.getBoolean(KEY_SEEN_TIPS, defaults.seenStudyTips),
             seenWelcome = prefs.getBoolean(KEY_SEEN_WELCOME, defaults.seenWelcome),
+            welcomeVersionSeen = prefs.getInt(KEY_WELCOME_VERSION, defaults.welcomeVersionSeen),
+            doubleTapPractice = prefs.getBoolean(KEY_DOUBLE_TAP_PRACTICE, defaults.doubleTapPractice),
+            leftAlignCards = prefs.getBoolean(KEY_LEFT_ALIGN, defaults.leftAlignCards),
             seededExamples = prefs.getBoolean(KEY_SEEDED, defaults.seededExamples),
             seenPracticeTips = prefs.getBoolean(KEY_SEEN_PRACTICE_TIPS, defaults.seenPracticeTips),
             seenModesTips = prefs.getBoolean(KEY_SEEN_MODES, defaults.seenModesTips),
@@ -198,6 +210,9 @@ class SettingsStore(context: Context) {
         const val KEY_FULL_SCREEN = "studyFullScreen"
         const val KEY_SEEN_TIPS = "seenStudyTips"
         const val KEY_SEEN_WELCOME = "seenWelcome"
+        const val KEY_WELCOME_VERSION = "welcomeVersionSeen"
+        const val KEY_DOUBLE_TAP_PRACTICE = "doubleTapPractice"
+        const val KEY_LEFT_ALIGN = "leftAlignCards"
         const val KEY_SEEDED = "seededExamples"
         const val KEY_SEEN_PRACTICE_TIPS = "seenPracticeTips"
         const val KEY_SEEN_MODES = "seenModesTips"

@@ -11,8 +11,8 @@ android {
         applicationId "app.cardsapp.cards"
         minSdk 29
         targetSdk 37
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.0.3"
         // No Wi‑Fi sync and no internet permission: Cards works entirely offline.
         buildConfigField 'boolean', 'SYNC_ENABLED', 'false'
         buildConfigField 'boolean', 'PUBLIC_EDITION', 'true'

@@ -30,6 +30,8 @@ Cards is **completely offline**. I wouldn't have felt comfortable making this ap
   - **Study** shows cards when they're due and spaces out your reviews (using the FSRS algorithm), so you remember them for longer.
   - **Practice** goes through any cards, at any time, without changing your schedule. That makes it good for cramming or a quick review.
 - **Full-screen studying.** Only the card is on screen. Tap the middle to see the answer, the right side for the next card, and the left side for the previous one.
+- **Double-tap to start.** Double-tap a folder or deck to jump straight into its cards in full screen, in Practice or Study (your choice in Settings).
+- **Centered or left-aligned cards,** whichever is easier for you to read.
 - **Choose which cards.** Pick all of them, or any mix of due, new, and starred cards.
 - **Stars, search, and shuffle.**
 - **Write cards right on your device,** or write them on a computer and import them.

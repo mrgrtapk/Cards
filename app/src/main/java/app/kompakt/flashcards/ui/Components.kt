@@ -331,6 +331,8 @@ fun ListRow(
     /** An extra small line under the subtitle (e.g. where a card lives). */
     detail: String? = null,
     onLongClick: (() -> Unit)? = null,
+    /** Double-tap action (e.g. open a folder's or deck's cards straight away). */
+    onDoubleClick: (() -> Unit)? = null,
     /**
      * A tappable 48dp control in place of [icon] (e.g. a star). The row starts closer to the
      * edge so its 24dp glyph lines up exactly with the icons on other rows.
@@ -341,7 +343,7 @@ fun ListRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick, onDoubleClick = onDoubleClick)
             .padding(
                 start = if (leading != null) ScreenPadding - 12.dp else ScreenPadding,
                 end = 8.dp,

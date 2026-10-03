@@ -32,9 +32,12 @@ import app.kompakt.flashcards.core.IncomingFile
 import app.kompakt.flashcards.data.NavTab
 import com.mudita.mmd.components.text.TextMMD
 
+/** Raise this when the welcome tips change, so everyone sees them again after updating. */
+const val WELCOME_VERSION = 2
+
 /**
  * Public edition, first launch: the app icon, a short welcome and the handful of things
- * that aren't obvious from the screen — long-press, the ▷ Study & Practice menu, the two
+ * that aren't obvious from the screen — long-press and double-tap, the ▷ Study & Practice menu, the two
  * ways of studying, writing and importing cards.
  */
 @Composable
@@ -70,7 +73,12 @@ fun WelcomeDialog(mentionExamples: Boolean = true, onDone: () -> Unit) {
                 .heightIn(max = 300.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
-            WelcomeTip(R.drawable.ic_touch, "Press and hold", "a folder or deck to rename, move, sort, export, or delete it.")
+            WelcomeTip(
+                R.drawable.ic_touch,
+                "Long-press and double-tap",
+                "Long-press a folder or deck to rename, move, sort, export, or delete it. " +
+                    "Double-tap one to jump straight into its cards in full screen, in Practice or Study (choose which in Settings).",
+            )
             WelcomeTip(R.drawable.ic_play, "The ▷ Study & Practice menu", "in the top navigation starts studying or practicing just that page's contents.")
             WelcomeTip(R.drawable.ic_list, "Study or Practice?", "Study shows cards when they're due, so you remember them longer. Practice runs through cards any time without changing that schedule.")
             WelcomeTip(R.drawable.ic_add, "Tap +", "to write a card, deck, or folder right on your device.")

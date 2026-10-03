@@ -55,6 +55,8 @@ sealed interface Route {
         val cardIds: List<String>? = null,
         /** For Study: only the due / new cards that this All / Due / New / Starred choice picks. */
         val filters: Set<PracticeFilter> = emptySet(),
+        /** Open in full screen even if the regular view is the usual choice (double-tap). */
+        val fullScreen: Boolean = false,
     ) : Route
 
     /** Every card in a deck, on its own page (so answers aren't on the deck screen). */
@@ -220,13 +222,15 @@ fun FlashcardsRoot(store: LibraryStore, settingsStore: SettingsStore) {
         }
     }
 
-    if (!settings.seenWelcome) {
+    if (!settings.seenWelcome || settings.welcomeVersionSeen < WELCOME_VERSION) {
         // Mention the example decks only if they're actually on Home.
         val hasExamples = store.data.value.folders.any { it.parentId == null && it.name == "Examples" }
-        WelcomeDialog(mentionExamples = hasExamples) { settingsStore.update { it.copy(seenWelcome = true) } }
+        WelcomeDialog(mentionExamples = hasExamples) {
+            settingsStore.update { it.copy(seenWelcome = true, welcomeVersionSeen = WELCOME_VERSION) }
+        }
     }
 
-    if (askBackup && settings.seenWelcome) {
+    if (askBackup && settings.seenWelcome && settings.welcomeVersionSeen >= WELCOME_VERSION) {
         val later = {
             askBackup = false
             settingsStore.update { it.copy(backupPromptAt = System.currentTimeMillis()) }

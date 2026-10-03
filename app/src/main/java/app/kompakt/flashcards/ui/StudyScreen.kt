@@ -165,7 +165,9 @@ fun StudyScreen(store: LibraryStore, settingsStore: SettingsStore, route: Route.
 
     // Full screen (the default): only the card, with tap zones — left = previous card,
     // middle = show the answer, right = next card. The phone's own bars are hidden too.
-    val fullScreen = settings.studyFullScreen && current != null
+    // A double-tap opens full screen this once, whatever the usual view is.
+    var forcedFullScreen by remember { mutableStateOf(route.fullScreen) }
+    val fullScreen = (settings.studyFullScreen || forcedFullScreen) && current != null
     ImmersiveMode(fullScreen)
 
     fun next(card: Card) {
@@ -197,10 +199,14 @@ fun StudyScreen(store: LibraryStore, settingsStore: SettingsStore, route: Route.
                 frontSize = settings.frontSize,
                 backSize = settings.backSize,
                 revealed = revealed,
+                leftAlign = settings.leftAlignCards,
                 onMiddle = { if (!revealed) revealed = true },
                 onLeft = ::previous,
                 onRight = { next(current) },
-                onExit = { settingsStore.update { it.copy(studyFullScreen = false) } },
+                onExit = {
+                    forcedFullScreen = false
+                    settingsStore.update { it.copy(studyFullScreen = false) }
+                },
             )
         }
         return
@@ -246,6 +252,7 @@ fun StudyScreen(store: LibraryStore, settingsStore: SettingsStore, route: Route.
                 revealed = revealed,
                 onReveal = { revealed = true },
                 modifier = Modifier.weight(1f),
+                leftAlign = settings.leftAlignCards,
             )
         }
 
@@ -309,6 +316,7 @@ private fun FullScreenCard(
     frontSize: TextSize,
     backSize: TextSize,
     revealed: Boolean,
+    leftAlign: Boolean,
     onMiddle: () -> Unit,
     onLeft: () -> Unit,
     onRight: () -> Unit,
@@ -340,10 +348,10 @@ private fun FullScreenCard(
                     .verticalScroll(rememberScrollState())
                     .heightIn(min = minHeight)
                     .padding(horizontal = 28.dp, vertical = 56.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = if (leftAlign) Alignment.Start else Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                CardText(card, frontSize, backSize, revealed)
+                CardText(card, frontSize, backSize, revealed, leftAlign)
             }
         }
         Box(
@@ -495,6 +503,7 @@ private fun CardFace(
     revealed: Boolean,
     onReveal: () -> Unit,
     modifier: Modifier,
+    leftAlign: Boolean = false,
 ) {
     BoxWithConstraints(
         modifier
@@ -514,23 +523,27 @@ private fun CardFace(
                 .verticalScroll(rememberScrollState())
                 .heightIn(min = minHeight)
                 .padding(horizontal = 28.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = if (leftAlign) Alignment.Start else Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            CardText(card, frontSize, backSize, revealed)
+            CardText(card, frontSize, backSize, revealed, leftAlign)
         }
     }
 }
 
 /** The front in bold, and once revealed a short rule and the back beneath it. */
 @Composable
-private fun CardText(card: Card, frontSize: TextSize, backSize: TextSize, revealed: Boolean) {
+private fun CardText(card: Card, frontSize: TextSize, backSize: TextSize, revealed: Boolean, leftAlign: Boolean) {
+    val align = if (leftAlign) TextAlign.Start else TextAlign.Center
+    // Left-aligned text fills the width, so its first line starts at the left edge.
+    val textModifier = if (leftAlign) Modifier.fillMaxWidth() else Modifier
     TextMMD(
         text = card.front,
         fontSize = frontSize.frontSp(),
         lineHeight = frontSize.frontSp() * 1.25f,
         fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center,
+        textAlign = align,
+        modifier = textModifier,
     )
     if (revealed) {
         Spacer(Modifier.height(28.dp))
@@ -544,7 +557,8 @@ private fun CardText(card: Card, frontSize: TextSize, backSize: TextSize, reveal
             text = card.back,
             fontSize = backSize.backSp(),
             lineHeight = backSize.backSp() * 1.3f,
-            textAlign = TextAlign.Center,
+            textAlign = align,
+            modifier = textModifier,
         )
     }
 }

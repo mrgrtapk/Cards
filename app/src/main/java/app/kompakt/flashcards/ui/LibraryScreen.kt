@@ -86,6 +86,18 @@ private sealed interface LibraryDialog {
 fun LibraryScreen(store: LibraryStore, settingsStore: SettingsStore, folderId: String?, nav: Navigator) {
     val data by store.data.collectAsState()
     val settings by settingsStore.settings.collectAsState()
+
+    // Double-tap a folder or deck: straight into its cards, full screen, in Practice or
+    // Study (as chosen in Settings).
+    fun quickStart(deckIds: Set<String>, title: String) {
+        val s = settingsStore.settings.value
+        if (s.doubleTapPractice) {
+            val ids = store.data.value.practiceCards(deckIds, s.practiceFilters, System.currentTimeMillis()).map { it.id }
+            nav.go(Route.Study(deckIds, title, practice = true, cardIds = ids, fullScreen = true))
+        } else {
+            nav.go(Route.Study(deckIds, title, practice = false, filters = s.practiceFilters, fullScreen = true))
+        }
+    }
     val folder = data.folder(folderId)
     if (folderId != null && folder == null) {
         LaunchedEffect(Unit) { nav.back() } // folder was deleted
@@ -263,6 +275,9 @@ fun LibraryScreen(store: LibraryStore, settingsStore: SettingsStore, folderId: S
                                     }
                                 },
                                 onLongClick = { if (!arranging && !selecting) dialog = LibraryDialog.FolderActions(item.id, item.name) },
+                                onDoubleClick = if (arranging || selecting) null else {
+                                    { quickStart(store.data.value.decksUnder(item.id).map { it.id }.toSet(), item.name) }
+                                },
                                 leading = if (selecting) {
                                     { SelectBox("f" + item.id in selected) { toggle("f" + item.id) } }
                                 } else {
@@ -291,6 +306,9 @@ fun LibraryScreen(store: LibraryStore, settingsStore: SettingsStore, folderId: S
                                     }
                                 },
                                 onLongClick = { if (!arranging && !selecting) dialog = LibraryDialog.DeckActions(d.id, d.name) },
+                                onDoubleClick = if (arranging || selecting) null else {
+                                    { quickStart(setOf(d.id), d.name) }
+                                },
                                 leading = if (selecting) {
                                     { SelectBox("d" + d.id in selected) { toggle("d" + d.id) } }
                                 } else {
