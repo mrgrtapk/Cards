@@ -381,7 +381,7 @@ fun CustomizeScreen(settingsStore: SettingsStore, nav: Navigator) {
             }
             item(key = "fs-note") {
                 TextMMD(
-                    text = "The Edit and Star buttons appear once the answer shows.",
+                    text = "These buttons appear once the answer shows.",
                     fontSize = 15.sp,
                     lineHeight = 21.sp,
                     color = MutedText,
