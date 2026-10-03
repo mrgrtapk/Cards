@@ -81,7 +81,7 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
             }
             item(key = "h-buttons") { SectionHeader("Customize") }
             item(key = "customize") {
-                Box(Modifier.fillMaxWidth().padding(start = ScreenPadding - 12.dp, top = 2.dp, bottom = 2.dp)) {
+                Box(Modifier.fillMaxWidth().padding(start = ScreenPadding - 12.dp, end = ScreenPadding, top = 2.dp, bottom = 2.dp)) {
                     SeeMoreLink("See more customization options", bold = false) { nav.go(Route.Customize) }
                 }
             }
@@ -157,7 +157,7 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
             if (settings.backupReminder) {
                 item(key = "backup-often") {
                     Choice(
-                        options = listOf(14 to "Every two weeks", 30 to "Monthly"),
+                        options = listOf(14 to "Biweekly", 30 to "Monthly"),
                         selected = settings.backupEveryDays,
                     ) { days -> settingsStore.update { it.copy(backupEveryDays = days) } }
                 }

@@ -503,6 +503,8 @@ fun SeeMoreLink(text: String, bold: Boolean = true, onClick: () -> Unit) {
             text = text,
             fontSize = if (bold) 17.sp else 18.sp,
             fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
+            // Wrap onto a second line on narrow screens, keeping the chevron in view.
+            modifier = Modifier.weight(1f, fill = false),
         )
         Icon(
             painterResource(R.drawable.ic_chevron),
@@ -701,8 +703,8 @@ fun DialogFrame(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Un
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 40.dp)
-                .widthIn(max = 320.dp)
+                .padding(horizontal = 20.dp)
+                .widthIn(max = 420.dp)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
                 .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(12.dp))
