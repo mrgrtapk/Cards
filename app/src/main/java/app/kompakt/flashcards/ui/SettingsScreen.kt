@@ -1,5 +1,18 @@
 package app.kompakt.flashcards.ui
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import android.net.Uri
+import android.content.Intent
+import android.content.ActivityNotFoundException
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,7 +58,22 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
     val settings by settingsStore.settings.collectAsState()
     val importer = rememberImporter(store, onExported = { settingsStore.markBackedUp() })
 
-    ScreenScaffold(title = "Settings", onBack = null) {
+    var showAbout by remember { mutableStateOf(false) }
+    if (showAbout) {
+        AboutDialog(
+            onShowWelcome = {
+                showAbout = false
+                settingsStore.update { it.copy(seenWelcome = false) }
+            },
+            onDismiss = { showAbout = false },
+        )
+    }
+
+    ScreenScaffold(
+        title = "Settings",
+        onBack = null,
+        actions = { IconAction(R.drawable.ic_info, "About Cards") { showAbout = true } },
+    ) {
         // One row per item, and the scroll-bar arrows move two rows at a time, so nothing is
         // skipped over unseen.
         LazyColumnMMD(modifier = Modifier.fillMaxSize(), scrollStep = 2) {
@@ -191,34 +219,7 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
                     ) { days -> settingsStore.update { it.copy(backupEveryDays = days) } }
                 }
             }
-            item(key = "h-about") { SectionHeader("About") }
-            item(key = "about") {
-                Row(
-                    Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 6.dp, bottom = 4.dp),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_cards_outline),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .padding(top = 2.dp)
-                            .size(22.dp),
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    TextMMD(
-                        text = "Cards — flashcards for calm, focused study. Built with Mudita Mindful Design.",
-                        fontSize = 18.sp,
-                        lineHeight = 24.sp,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-            item(key = "welcome-again") {
-                Box(Modifier.fillMaxWidth().padding(start = ScreenPadding - 12.dp, bottom = 24.dp)) {
-                    SeeMoreLink("Show welcome tips", bold = false) { settingsStore.update { it.copy(seenWelcome = false) } }
-                }
-            }
+            item(key = "end") { Spacer(Modifier.height(32.dp)) }
         }
     }
 }
@@ -491,5 +492,68 @@ private fun <T> Choice(options: List<Pair<T, String>>, selected: T, onSelect: (T
                 }
             }
         }
+    }
+}
+
+
+private const val GITHUB_URL = "https://github.com/mrgrtapk/Cards"
+
+/** Settings › ⓘ: what Cards is, its version, where the code lives, and the welcome tips. */
+@Composable
+private fun AboutDialog(onShowWelcome: () -> Unit, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    var linkNote by remember { mutableStateOf<String?>(null) }
+    DialogFrame(onDismiss = onDismiss) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                painter = painterResource(R.drawable.ic_cards_outline),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(30.dp),
+            )
+            Spacer(Modifier.width(10.dp))
+            Column {
+                TextMMD(text = "Cards", fontSize = 23.sp, fontWeight = FontWeight.Bold)
+                TextMMD(text = "Version ${BuildConfig.VERSION_NAME}", fontSize = 14.sp, color = MutedText)
+            }
+        }
+        Spacer(Modifier.height(14.dp))
+        TextMMD(
+            text = "Flashcards for calm, focused study, made for e-ink devices. Built with Mudita Mindful Design.",
+            fontSize = 16.sp,
+            lineHeight = 22.sp,
+        )
+        Spacer(Modifier.height(10.dp))
+        TextMMD(
+            text = "Your cards stay on this device. No accounts, no ads, no tracking.",
+            fontSize = 16.sp,
+            lineHeight = 22.sp,
+        )
+        Spacer(Modifier.height(16.dp))
+        TextMMD(text = "Open source on GitHub", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        TextMMD(
+            text = AnnotatedString("github.com/mrgrtapk/Cards", SpanStyle(textDecoration = TextDecoration.Underline)),
+            fontSize = 16.sp,
+            modifier = Modifier
+                .padding(vertical = 4.dp)
+                .clickable(onClickLabel = "Open on GitHub") {
+                    // Hands the link to the phone's browser; Cards itself doesn't go online.
+                    // No browser (e.g. some e-ink phones): copy the link instead.
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_URL)))
+                    } catch (e: ActivityNotFoundException) {
+                        clipboard.setText(AnnotatedString(GITHUB_URL))
+                        linkNote = "No browser found, so the link was copied."
+                    }
+                },
+        )
+        linkNote?.let { TextMMD(text = it, fontSize = 14.sp, color = MutedText) }
+        Spacer(Modifier.height(8.dp))
+        Box(Modifier.offset(x = (-12).dp)) {
+            SeeMoreLink("Show welcome tips", bold = false, onClick = onShowWelcome)
+        }
+        Spacer(Modifier.height(10.dp))
+        PrimaryButton("Done", onDismiss)
     }
 }

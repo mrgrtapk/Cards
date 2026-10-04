@@ -90,9 +90,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun applySystemBars(dark: Boolean) {
-        val black = android.graphics.Color.BLACK
-        val white = android.graphics.Color.WHITE
-        val style = if (dark) SystemBarStyle.dark(black) else SystemBarStyle.light(white, white)
+        // Fully transparent bars: the page itself shows behind the status bar and the
+        // navigation bar / gesture handle, with icons in the opposite color.
+        val clear = android.graphics.Color.TRANSPARENT
+        val style = if (dark) SystemBarStyle.dark(clear) else SystemBarStyle.light(clear, clear)
         enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+        // Android otherwise lays a translucent "contrast" scrim behind the navigation bar.
+        window.isNavigationBarContrastEnforced = false
+        window.isStatusBarContrastEnforced = false
     }
 }

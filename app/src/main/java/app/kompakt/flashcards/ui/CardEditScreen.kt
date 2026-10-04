@@ -204,7 +204,7 @@ fun CardEditor(
             }
             item(key = "front") {
                 Column(Modifier.padding(top = 20.dp)) {
-                    FieldLabel("Front") { marker -> frontField = frontField.toggleMarker(marker) }
+                    FieldLabel("Front")
                     TextFieldMMD(
                         value = frontField,
                         onValueChange = { frontField = it },

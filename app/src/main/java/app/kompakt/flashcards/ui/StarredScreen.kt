@@ -38,6 +38,7 @@ fun StarredScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Naviga
                 title = "Starred",
                 practice = true,
                 cardIds = starred.map { it.id },
+                fullScreen = true,
             ),
         )
     }
