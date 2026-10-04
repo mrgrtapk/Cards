@@ -317,6 +317,11 @@ fun FormatGuide() {
             caption = "Start the front with Q: and the back with A:. Leave a blank line between cards.",
         )
         GuideCard(
+            title = "Bold and italics",
+            sample = "Murder :: An unlawful killing\nwith **malice aforethought**\n*(common law)*",
+            caption = "Wrap words in ** for bold or * for italics. The B and I buttons in the card editor do it for you.",
+        )
+        GuideCard(
             title = "From a spreadsheet",
             sample = "Front,Back\ngato,cat\nperro,dog",
             caption = "Save as .csv — column A is the front, column B the back.",

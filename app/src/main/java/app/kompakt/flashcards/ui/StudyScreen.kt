@@ -1,5 +1,6 @@
 package app.kompakt.flashcards.ui
 
+import app.kompakt.flashcards.core.RichText
 import androidx.activity.compose.BackHandler
 import android.app.Activity
 import android.content.Context
@@ -555,7 +556,7 @@ private fun CardText(card: Card, frontSize: TextSize, backSize: TextSize, reveal
     // Left-aligned text fills the width, so its first line starts at the left edge.
     val textModifier = if (leftAlign) Modifier.fillMaxWidth() else Modifier
     TextMMD(
-        text = card.front,
+        text = richText(card.front),
         fontSize = frontSize.frontSp(),
         lineHeight = frontSize.frontSp() * 1.25f,
         fontWeight = FontWeight.Bold,
@@ -571,7 +572,7 @@ private fun CardText(card: Card, frontSize: TextSize, backSize: TextSize, reveal
         )
         Spacer(Modifier.height(28.dp))
         TextMMD(
-            text = card.back,
+            text = richText(card.back),
             fontSize = backSize.backSp(),
             lineHeight = backSize.backSp() * 1.3f,
             textAlign = align,
@@ -647,7 +648,7 @@ private fun CardPicker(cards: List<Card>, currentId: String?, onPick: (String) -
         LazyColumnMMD(modifier = Modifier.weight(1f).fillMaxWidth()) {
             itemsIndexed(cards, key = { _, c -> c.id }) { index, card ->
                 ListRow(
-                    title = card.front.replace('\n', ' '),
+                    title = RichText.plain(card.front).replace('\n', ' '),
                     subtitle = if (card.id == currentId) "Showing now" else null,
                     bold = card.id == currentId,
                     titleSize = 17,

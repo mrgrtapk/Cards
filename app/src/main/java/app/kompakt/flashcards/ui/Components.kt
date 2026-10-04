@@ -1,5 +1,10 @@
 package app.kompakt.flashcards.ui
 
+import app.kompakt.flashcards.core.RichText
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.AnnotatedString
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -1008,5 +1013,25 @@ fun SmallChip(label: String, selected: Boolean, modifier: Modifier = Modifier, o
             softWrap = false,
             overflow = TextOverflow.Clip,
         )
+    }
+}
+
+
+/** Card text with its **bold** and *italic* markers turned into real formatting. */
+@Composable
+fun richText(source: String): AnnotatedString = remember(source) {
+    val styled = RichText.parse(source)
+    buildAnnotatedString {
+        append(styled.text)
+        for (span in styled.spans) {
+            addStyle(
+                SpanStyle(
+                    fontWeight = if (span.bold) FontWeight.Bold else null,
+                    fontStyle = if (span.italic) FontStyle.Italic else null,
+                ),
+                span.start,
+                span.end,
+            )
+        }
     }
 }

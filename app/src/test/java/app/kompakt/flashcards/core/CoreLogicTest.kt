@@ -70,7 +70,7 @@ private fun runChecks() {
     val evidence = ak.decks.first { it.name == "Evidence" }
     val spanish = ak.decks.first { it.name == "Spanish" }
     check("anki sub-decks become folders", evidence.folders == listOf("Bar") && spanish.folders.isEmpty(), ak.decks.map { it.folders to it.name })
-    check("anki html to text", evidence.cards[0] == ("Hearsay?" to "An out-of-court statement\noffered for its truth & more"), evidence.cards[0])
+    check("anki html to text", evidence.cards[0] == ("Hearsay?" to "An **out-of-court** statement\noffered for its truth & more"), evidence.cards[0])
     check("anki cloze, one card per blank", evidence.cards.drop(1) == listOf(
         "[…] applies state substantive law" to "Erie applies state substantive law\nBack extra here",
         "Erie applies [which law?] substantive law" to "Erie applies state substantive law\nBack extra here",
@@ -86,6 +86,17 @@ private fun runChecks() {
     val (ankiLib, ankiReport) = LibraryData().importFiles(listOf(IncomingFile("Downloads/export.txt", ankiNew)))
     check("anki import builds folders and decks", ankiLib.folders.map { it.name }.toSet() == setOf("Downloads", "Bar") &&
         ankiLib.decks.map { it.name }.toSet() == setOf("Evidence", "Spanish") && ankiLib.cards.size == 6, ankiReport)
+
+    println("Bold and italics")
+    val r1 = RichText.parse("The **mens rea** is *malice*, not ***intent***.")
+    check("markers hidden", r1.text == "The mens rea is malice, not intent.", r1.text)
+    val found = r1.spans.map { Triple(r1.text.substring(it.start, it.end), it.bold, it.italic) }.toSet()
+    check("bold, italic and both found", found == setOf(
+        Triple("mens rea", true, false), Triple("malice", false, true),
+        Triple("intent", true, true), Triple("intent", true, false),
+    ), found)
+    check("lone asterisks left alone", RichText.plain("5 * 3 = 15\n* not a list\nfootnote*") == "5 * 3 = 15\n* not a list\nfootnote*")
+    check("anki bold and italics kept", AnkiText.toText("A <b>key</b> word and <i>emphasis </i>here", true) == "A **key** word and *emphasis* here", AnkiText.toText("A <b>key</b> word and <i>emphasis </i>here", true))
 
     println("Import / merge")
     val files = listOf(

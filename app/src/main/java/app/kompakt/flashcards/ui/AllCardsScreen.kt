@@ -1,5 +1,6 @@
 package app.kompakt.flashcards.ui
 
+import app.kompakt.flashcards.core.RichText
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,7 +68,7 @@ fun AllCardsScreen(store: LibraryStore, deckId: String, nav: Navigator) {
     when (val d = dialog) {
         null -> Unit
         is CardsDialog.Actions -> ActionsDialog(
-            title = d.card.front.lineSequence().first(),
+            title = RichText.plain(d.card.front).lineSequence().first(),
             actions = listOf(
                 (if (d.card.starred) "Unstar" else "Star") to {
                     store.update { it.toggleStar(d.card.id) }
@@ -83,7 +84,7 @@ fun AllCardsScreen(store: LibraryStore, deckId: String, nav: Navigator) {
         )
         is CardsDialog.Delete -> ConfirmDialog(
             title = "Delete this card?",
-            message = d.card.front.take(80),
+            message = RichText.plain(d.card.front).take(80),
             confirmLabel = "Delete",
             onConfirm = {
                 store.update { it.deleteCard(d.card.id) }

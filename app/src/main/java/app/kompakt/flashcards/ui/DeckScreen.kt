@@ -1,5 +1,6 @@
 package app.kompakt.flashcards.ui
 
+import app.kompakt.flashcards.core.RichText
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -274,8 +275,8 @@ fun CardRow(
     place: String? = null,
 ) {
     ListRow(
-        title = card.front.replace('\n', ' '),
-        subtitle = card.back.replace('\n', ' '),
+        title = RichText.plain(card.front).replace('\n', ' '),
+        subtitle = RichText.plain(card.back).replace('\n', ' '),
         subtitleMaxLines = 1,
         detail = place,
         onClick = onClick,

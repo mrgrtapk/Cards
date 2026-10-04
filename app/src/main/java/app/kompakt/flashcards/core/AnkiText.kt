@@ -19,8 +19,8 @@ package app.kompakt.flashcards.core
  *    card)" also adds the reverse card, and "optional reversed" does when its third field is set.
  *  - Cloze notes ({{c1::answer::hint}}) become one card per cloze number: the front shows "[…]"
  *    (or "[hint]") in place of that blank, the back the full text plus the Back Extra field.
- *  - Anki's formatting becomes plain text: line breaks and list items are kept, other tags are
- *    dropped, and entities like &nbsp; are decoded. Images and sounds are left out (Cards is
+ *  - Anki's formatting becomes Cards text: bold and italics are kept (as **bold** / *italics*),
+ *    line breaks and list items are kept, other tags are dropped, and entities like &nbsp; are decoded. Images and sounds are left out (Cards is
  *    text-only), and the import report says how many were skipped.
  *  - Decks: with a deck column, "Bar::Evidence::Hearsay" becomes folders Bar › Evidence and the
  *    deck Hearsay. Without one, the deck is named after the file.
@@ -170,6 +170,14 @@ object AnkiText {
         var s = field.replace(MEDIA, "")
         val isHtml = html ?: Regex("<[a-zA-Z/][^>]*>|&[#a-zA-Z0-9]+;").containsMatchIn(s)
         if (isHtml) {
+            // Bold and italics become Cards' **bold** and *italics* (spaces kept outside the markers).
+            s = s.replace(Regex("<(b|strong)\\b[^>]*>(\\s*)(.*?)(\\s*)</\\1>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL))) { m ->
+                val inner = m.groupValues[3]
+                if (inner.isBlank()) m.groupValues[2] + inner + m.groupValues[4] else m.groupValues[2] + "**" + inner + "**" + m.groupValues[4]
+            }.replace(Regex("<(i|em)\\b[^>]*>(\\s*)(.*?)(\\s*)</\\1>", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL))) { m ->
+                val inner = m.groupValues[3]
+                if (inner.isBlank()) m.groupValues[2] + inner + m.groupValues[4] else m.groupValues[2] + "*" + inner + "*" + m.groupValues[4]
+            }
             s = s.replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
                 .replace(Regex("<li\\b[^>]*>", RegexOption.IGNORE_CASE), "\n• ")
                 .replace(Regex("<(div|p|tr|ul|ol|h[1-6])\\b[^>]*>", RegexOption.IGNORE_CASE), "\n")

@@ -87,6 +87,8 @@ perro,dog
 
 **From Anki.** In Anki, choose **File › Export…**, pick **Notes in Plain Text (.txt)**, and tick **Include deck name** and **Include notetype name**. Import the .txt in Cards: Anki's decks and sub-decks become decks and folders, and each cloze blank becomes its own card. Images and sounds are left out, and cards start fresh (Anki's review history isn't carried over).
 
+**Bold and italics.** Wrap words in `**` for **bold** or `*` for *italics*, like `**malice aforethought**`. In the app's card editor, the **B** and **I** buttons do it for you.
+
 **Folders.** Folders on your computer become folders in Cards. Lines that start with `#` are ignored, so you can use them as headings.
 
 ---

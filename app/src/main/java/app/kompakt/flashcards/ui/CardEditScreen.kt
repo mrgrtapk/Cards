@@ -1,7 +1,9 @@
 package app.kompakt.flashcards.ui
 
+import app.kompakt.flashcards.core.RichText
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,8 +30,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,8 +92,11 @@ fun CardEditor(
     var targetDeckId by rememberSaveable { mutableStateOf(deckId) }
     // An existing card may have been moved, so always show the deck it's in now.
     val deck = data.deck(existing?.deckId ?: targetDeckId ?: "")
-    var front by rememberSaveable { mutableStateOf(existing?.front ?: "") }
-    var back by rememberSaveable { mutableStateOf(existing?.back ?: "") }
+    // TextFieldValue (not just the text) so the B and I buttons can wrap the selected words.
+    var frontField by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(existing?.front ?: "")) }
+    var backField by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(existing?.back ?: "")) }
+    val front = frontField.text
+    val back = backField.text
     var savedCount by rememberSaveable { mutableStateOf(0) }
     var confirmDelete by remember { mutableStateOf(false) }
     var picking by remember { mutableStateOf(false) }
@@ -116,8 +129,8 @@ fun CardEditor(
             val b = back.trim()
             if (f.isNotEmpty() && b.isNotEmpty()) {
                 store.update { it.upsertCard(Card(newId(), deck.id, f, b)) }
-                front = ""
-                back = ""
+                frontField = TextFieldValue("")
+                backField = TextFieldValue("")
                 savedCount++
             }
         }
@@ -139,8 +152,8 @@ fun CardEditor(
             onClose()
         } else {
             // Stay here so several cards can be added in a row.
-            front = ""
-            back = ""
+            frontField = TextFieldValue("")
+            backField = TextFieldValue("")
             savedCount++
             runCatching { frontFocus.requestFocus() }
         }
@@ -191,10 +204,10 @@ fun CardEditor(
             }
             item(key = "front") {
                 Column(Modifier.padding(top = 20.dp)) {
-                    FieldLabel("Front")
+                    FieldLabel("Front") { marker -> frontField = frontField.toggleMarker(marker) }
                     TextFieldMMD(
-                        value = front,
-                        onValueChange = { front = it },
+                        value = frontField,
+                        onValueChange = { frontField = it },
                         minLines = 2,
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                         modifier = Modifier
@@ -205,10 +218,10 @@ fun CardEditor(
             }
             item(key = "back") {
                 Column(Modifier.padding(top = 20.dp)) {
-                    FieldLabel("Back")
+                    FieldLabel("Back") { marker -> backField = backField.toggleMarker(marker) }
                     TextFieldMMD(
-                        value = back,
-                        onValueChange = { back = it },
+                        value = backField,
+                        onValueChange = { backField = it },
                         minLines = 3,
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                         modifier = Modifier.fillMaxWidth(),
@@ -241,7 +254,7 @@ fun CardEditor(
     if (confirmDelete && existing != null) {
         ConfirmDialog(
             title = "Delete this card?",
-            message = existing.front.take(80),
+            message = RichText.plain(existing.front).take(80),
             confirmLabel = "Delete",
             onConfirm = {
                 confirmDelete = false
@@ -253,8 +266,47 @@ fun CardEditor(
     }
 }
 
+/** "Front" / "Back" with small B and I buttons that bold or italicize the selected words. */
 @Composable
-private fun FieldLabel(text: String) {
-    TextMMD(text = text, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+private fun FieldLabel(text: String, onFormat: (String) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        TextMMD(text = text, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+        FormatButton("B", "Bold", FontWeight.Black, FontStyle.Normal) { onFormat("**") }
+        Spacer(Modifier.width(8.dp))
+        FormatButton("I", "Italics", FontWeight.Medium, FontStyle.Italic) { onFormat("*") }
+    }
     Spacer(Modifier.height(8.dp))
+}
+
+@Composable
+private fun FormatButton(label: String, description: String, weight: FontWeight, style: FontStyle, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(40.dp)
+            .border(1.5.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
+            .clickable(onClickLabel = description, onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) {
+        TextMMD(
+            text = AnnotatedString(label, SpanStyle(fontWeight = weight, fontStyle = style)),
+            fontSize = 18.sp,
+        )
+    }
+}
+
+/**
+ * Wraps the selected words in [marker] ("**" bold, "*" italics), or unwraps them if they're
+ * already wrapped. With nothing selected, adds an empty pair with the cursor in the middle.
+ */
+private fun TextFieldValue.toggleMarker(marker: String): TextFieldValue {
+    val s = selection.min
+    val e = selection.max
+    val t = text
+    val m = marker.length
+    if (s >= m && e + m <= t.length && t.substring(s - m, s) == marker && t.substring(e, e + m) == marker) {
+        return TextFieldValue(t.substring(0, s - m) + t.substring(s, e) + t.substring(e + m), TextRange(s - m, e - m))
+    }
+    if (s == e) return TextFieldValue(t.substring(0, s) + marker + marker + t.substring(s), TextRange(s + m))
+    return TextFieldValue(t.substring(0, s) + marker + t.substring(s, e) + marker + t.substring(e), TextRange(s + m, e + m))
 }
