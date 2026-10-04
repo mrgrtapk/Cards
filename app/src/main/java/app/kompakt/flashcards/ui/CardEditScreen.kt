@@ -268,12 +268,14 @@ fun CardEditor(
 
 /** "Front" / "Back" with small B and I buttons that bold or italicize the selected words. */
 @Composable
-private fun FieldLabel(text: String, onFormat: (String) -> Unit) {
+private fun FieldLabel(text: String, onFormat: ((String) -> Unit)? = null) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         TextMMD(text = text, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-        FormatButton("B", "Bold", FontWeight.Black, FontStyle.Normal) { onFormat("**") }
-        Spacer(Modifier.width(8.dp))
-        FormatButton("I", "Italics", FontWeight.Medium, FontStyle.Italic) { onFormat("*") }
+        if (onFormat != null) {
+            FormatButton("B", "Bold", FontWeight.Black, FontStyle.Normal) { onFormat("**") }
+            Spacer(Modifier.width(8.dp))
+            FormatButton("I", "Italics", FontWeight.Medium, FontStyle.Italic) { onFormat("*") }
+        }
     }
     Spacer(Modifier.height(8.dp))
 }
