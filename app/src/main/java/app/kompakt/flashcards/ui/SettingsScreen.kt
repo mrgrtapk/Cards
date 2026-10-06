@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,10 +94,18 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 10.dp, bottom = 8.dp),
                     )
+                    // −1 stands for "Custom", which keeps the current size and adds − / + below.
                     Choice(
-                        options = listOf(100 to "Default", 115 to "Large", 130 to "Larger"),
-                        selected = settings.displayScale,
-                    ) { scale -> settingsStore.update { it.copy(displayScale = scale) } }
+                        options = listOf(100 to "Default", 115 to "Large", 130 to "Larger", -1 to "Custom"),
+                        selected = if (settings.displayCustom) -1 else settings.displayScale,
+                    ) { choice ->
+                        settingsStore.update {
+                            if (choice == -1) it.copy(displayCustom = true) else it.copy(displayScale = choice, displayCustom = false)
+                        }
+                    }
+                    if (settings.displayCustom) {
+                        ScaleStepper(settings.displayScale) { scale -> settingsStore.update { it.copy(displayScale = scale) } }
+                    }
                 }
             }
             item(key = "h-text") { SectionHeader("Card text") }
@@ -569,5 +578,38 @@ private fun AboutDialog(onShowWelcome: () -> Unit, onDismiss: () -> Unit) {
         }
         Spacer(Modifier.height(10.dp))
         PrimaryButton("Done", onDismiss)
+    }
+}
+
+
+/** Display size › Custom: − and + in 5% steps, from 80% to 160%. */
+@Composable
+private fun ScaleStepper(scale: Int, onChange: (Int) -> Unit) {
+    Row(
+        Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 2.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val step = 5
+        OutlinedButtonMMD(
+            border = inkBorder(),
+            onClick = { onChange((scale - step).coerceAtLeast(80)) },
+            enabled = scale > 80,
+            modifier = Modifier.heightIn(min = 44.dp).width(64.dp),
+            contentPadding = PaddingValues(0.dp),
+        ) { TextMMD(text = "−", fontSize = 22.sp, fontWeight = FontWeight.Bold) }
+        TextMMD(
+            text = "$scale%",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f),
+        )
+        OutlinedButtonMMD(
+            border = inkBorder(),
+            onClick = { onChange((scale + step).coerceAtMost(160)) },
+            enabled = scale < 160,
+            modifier = Modifier.heightIn(min = 44.dp).width(64.dp),
+            contentPadding = PaddingValues(0.dp),
+        ) { TextMMD(text = "+", fontSize = 22.sp, fontWeight = FontWeight.Bold) }
     }
 }

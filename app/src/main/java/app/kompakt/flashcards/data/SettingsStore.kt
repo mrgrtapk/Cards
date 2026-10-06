@@ -60,6 +60,8 @@ data class AppSettings(
     val leftAlignCards: Boolean = false,
     /** Display size: 100 = the device's normal size; 115 / 130 make everything in Cards larger. */
     val displayScale: Int = 100,
+    /** Display size is "Custom": [displayScale] was fine-tuned with − and +. */
+    val displayCustom: Boolean = false,
     /** Full screen: also show the Edit (after the answer), Star, and All cards buttons. */
     val fullScreenEdit: Boolean = false,
     val fullScreenStar: Boolean = false,
@@ -130,6 +132,7 @@ class SettingsStore(context: Context) {
             .putBoolean(KEY_DOUBLE_TAP_PRACTICE, next.doubleTapPractice)
             .putBoolean(KEY_LEFT_ALIGN, next.leftAlignCards)
             .putInt(KEY_DISPLAY_SCALE, next.displayScale)
+            .putBoolean(KEY_DISPLAY_CUSTOM, next.displayCustom)
             .putBoolean(KEY_FS_EDIT, next.fullScreenEdit)
             .putBoolean(KEY_FS_STAR, next.fullScreenStar)
             .putBoolean(KEY_FS_ALL_CARDS, next.fullScreenAllCards)
@@ -187,6 +190,7 @@ class SettingsStore(context: Context) {
             doubleTapPractice = prefs.getBoolean(KEY_DOUBLE_TAP_PRACTICE, defaults.doubleTapPractice),
             leftAlignCards = prefs.getBoolean(KEY_LEFT_ALIGN, defaults.leftAlignCards),
             displayScale = prefs.getInt(KEY_DISPLAY_SCALE, defaults.displayScale),
+            displayCustom = prefs.getBoolean(KEY_DISPLAY_CUSTOM, defaults.displayCustom),
             fullScreenEdit = prefs.getBoolean(KEY_FS_EDIT, defaults.fullScreenEdit),
             fullScreenStar = prefs.getBoolean(KEY_FS_STAR, defaults.fullScreenStar),
             fullScreenAllCards = prefs.getBoolean(KEY_FS_ALL_CARDS, defaults.fullScreenAllCards),
@@ -228,6 +232,7 @@ class SettingsStore(context: Context) {
         const val KEY_DOUBLE_TAP_PRACTICE = "doubleTapPractice"
         const val KEY_LEFT_ALIGN = "leftAlignCards"
         const val KEY_DISPLAY_SCALE = "displayScale"
+        const val KEY_DISPLAY_CUSTOM = "displayCustom"
         const val KEY_FS_EDIT = "fullScreenEdit"
         const val KEY_FS_STAR = "fullScreenStar"
         const val KEY_FS_ALL_CARDS = "fullScreenAllCards"
