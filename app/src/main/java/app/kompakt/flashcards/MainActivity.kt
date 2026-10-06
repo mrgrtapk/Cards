@@ -11,6 +11,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import app.kompakt.flashcards.ui.FlashcardsRoot
 import com.mudita.mmd.ThemeMMD
 
@@ -73,7 +75,8 @@ class MainActivity : ComponentActivity() {
         val app = application as FlashcardsApp
         applySystemBars(app.settings.settings.value.darkMode)
         setContent {
-            val dark = app.settings.settings.collectAsState().value.darkMode
+            val settings = app.settings.settings.collectAsState().value
+            val dark = settings.darkMode
             // Draw behind the status/navigation bars (matching the page, with icons in the
             // opposite color) so the app can see the keyboard and hide the bottom navigation.
             LaunchedEffect(dark) { applySystemBars(dark) }
@@ -82,7 +85,14 @@ class MainActivity : ComponentActivity() {
             ThemeMMD(colorScheme = colors) {
                 // Mudita's text and icons fall back to the "content color", which is black unless
                 // something sets it — so set it to the page's ink color for dark mode.
-                CompositionLocalProvider(LocalContentColor provides colors.onSurface) {
+                // Display size: scaling the density enlarges everything in Cards together —
+                // text, icons, buttons, and spacing — like Android's own display size setting.
+                val base = LocalDensity.current
+                val scale = settings.displayScale / 100f
+                CompositionLocalProvider(
+                    LocalContentColor provides colors.onSurface,
+                    LocalDensity provides Density(base.density * scale, base.fontScale),
+                ) {
                     FlashcardsRoot(app.store, app.settings)
                 }
             }

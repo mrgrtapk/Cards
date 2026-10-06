@@ -85,6 +85,20 @@ fun SettingsScreen(store: LibraryStore, settingsStore: SettingsStore, nav: Navig
                     checked = settings.darkMode,
                 ) { on -> settingsStore.update { it.copy(darkMode = on) } }
             }
+            item(key = "display-size") {
+                Column {
+                    TextMMD(
+                        text = "Display size",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = ScreenPadding, end = ScreenPadding, top = 10.dp, bottom = 8.dp),
+                    )
+                    Choice(
+                        options = listOf(100 to "Default", 115 to "Large", 130 to "Larger"),
+                        selected = settings.displayScale,
+                    ) { scale -> settingsStore.update { it.copy(displayScale = scale) } }
+                }
+            }
             item(key = "h-text") { SectionHeader("Card text") }
             item(key = "front") {
                 SizeChoice("Front", settings.frontSize) { size -> settingsStore.update { it.copy(frontSize = size) } }
